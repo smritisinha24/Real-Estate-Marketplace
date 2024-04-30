@@ -1,12 +1,17 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { signInStart, signInFailure, signInSuccess } from '../redux/user/userSlice'
 
 export default function Signin() {
 
   const [formData , setFormData] = useState({})
-  const [error , setError] = useState(null)
-  const [loading , setLoading] = useState(false);
+  // const [error , setError] = useState(null)
+  // const [loading , setLoading] = useState(false);
+  const {loading , error} = useSelector((state) =>state.user);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) =>{
     // to keep the previously added data i.e while entering email , i want to keep the previously added username
@@ -21,7 +26,8 @@ export default function Signin() {
       e.preventDefault();
 
       try{
-        setLoading(true);
+        // setLoading(true);
+        dispatch(signInStart());
         const res = await fetch('/api/auth/signin',      //to avoid writing the whole destination like localhost:3000, i added the path in vite.config so that i can easily use that proxy with name /api instead which improves security
       {
         method : 'POST',
@@ -33,17 +39,20 @@ export default function Signin() {
     ); 
       const data = await res.json();
       if(data.success===false){
-        setLoading(false);
-        setError(data.message);
+        // setLoading(false);
+        // setError(data.message);
+        dispatch(signInFailure(data.message));
         return;
       }
-      setLoading(false);
-      setError(null);
+      // setLoading(false);
+      // setError(null);
+      dispatch(signInSuccess(data));
       navigate('/');
     }
     catch(error){
-      setLoading(false);
-      setError(error.message);
+      // setLoading(false);
+      // setError(error.message);
+      dispatch(signInFailure(error.message));
       }
     console.log(data);
     };
