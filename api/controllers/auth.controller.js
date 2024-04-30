@@ -31,7 +31,7 @@ export const signin = async(req,res,next) => {
         const token = jwt.sign({ id: validUser._id}, process.env.JWT_SECRET)
 
         // to remove the password before sednding it back to the user
-        const {password: pass, ...rest } = validUser._doc;
+        const {password: pass, ...rest } = validUser._doc; // this statement means seperating password from the rest of the info which is to be passed
 
         res.cookie('acess_token' , token, {httpOnly: true })
         .status(200)
